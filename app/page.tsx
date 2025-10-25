@@ -1,64 +1,172 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from 'react';
+import { SpotifyArtist } from '../types/spotify';
 
 export default function Home() {
+  const [featuredArtists, setFeaturedArtists] = useState<SpotifyArtist[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch random artists on component mount
+  useEffect(() => {
+    fetchRandomArtists();
+  }, []);
+
+  const fetchRandomArtists = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/random-artists');
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log('API Error:', errorData);
+        throw new Error(errorData.error || 'Failed to fetch artists');
+      }
+      
+      const artists: SpotifyArtist[] = await response.json();
+      setFeaturedArtists(artists);
+    } 
+    catch (error) {
+      console.error('Error fetching artists:', error);
+      setFeaturedArtists([]);
+    } 
+    finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <header className="py-6 px-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold text-green-400">SpotyTaste</h1>
+          <p className="text-white font-semibold mt-2">
+            Discover your next favorite music based on your taste..
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-8 py-12">
+        {/* Hero Section */}
+        <section className="text-center mb-16">
+          <p className="text-5xl font-black mb-6 bg-gradient-to-r from-gray-900 to-green-500 bg-clip-text text-transparent">
+            Your next loop starts here.
+          </p>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto font-black">
+            Connect your Spotify and get 10 personalized song suggestions based on your top 3 artists
+          </p>
+        </section>
+
+        {/* How It Works */}
+        <div className="text-center mb-16">
+          <div className="bg-spotify-darkgray rounded-2xl p-8 max-w-4xl mx-auto">
+            <h3 className="text-2xl font-bold mb-6 text-spotify-green">How It Works</h3>
+            <div className="grid md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-spotify-green rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-black font-bold text-lg">1</span>
+                </div>
+                <h4 className="font-semibold mb-2">Connect Spotify</h4>
+                <p className="text-sm text-gray-400">Secure login with your account</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-spotify-green rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-black font-bold text-lg">2</span>
+                </div>
+                <h4 className="font-semibold mb-2">Analyze Top 3</h4>
+                <p className="text-sm text-gray-400">We discover your most-played artists</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-spotify-green rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-black font-bold text-lg">3</span>
+                </div>
+                <h4 className="font-semibold mb-2">Get Suggestions</h4>
+                <p className="text-sm text-gray-400">Receive 10 personalized song matches</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-spotify-green rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-black font-bold text-lg">4</span>
+                </div>
+                <h4 className="font-semibold mb-2">Discover Music</h4>
+                <p className="text-sm text-gray-400">Expand your music library instantly</p>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Two Column Layout */}
+        <div className="grid md:grid-cols-2 gap-12 items-start">
+          
+          {/* Left Column - Featured Artists */}
+          <div className="bg-spotify-darkgray rounded-2xl p-8">
+            <h3 className="text-2xl font-bold mb-6 text-gray-100">Featured Artists</h3>
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {loading ? (
+                // Loading state
+                <>
+                  {[...Array(3)].map((_, index) => (
+                    <div key={index} className="bg-spotify-gray rounded-lg p-4 text-center">
+                      <div className="w-16 h-16 bg-gray-500 rounded-full mx-auto mb-3 animate-pulse"></div>
+                      <p className="font-semibold text-sm">Loading...</p>
+                      <p className="text-xs text-gray-400">Artist</p>
+                    </div>
+                  ))}
+                </>
+              ) : featuredArtists.length > 0 ? (
+                // Display actual artists
+                featuredArtists.map((artist) => (
+                  <div key={artist.id} className="bg-spotify-gray rounded-lg p-4 text-center hover:bg-spotify-lightgray transition-colors">
+                    <img 
+                      src={artist.images[0]?.url || '/placeholder-artist.jpg'} 
+                      alt={artist.name}
+                      className="w-16 h-16 rounded-full mx-auto mb-3 object-cover"
+                    />
+                    <p className="font-semibold text-sm">{artist.name}</p>
+                    <p className="text-xs text-gray-400">{artist.genres[0] || 'Artist'}</p>
+                  </div>
+                ))
+              ) : (
+                // Error state
+                <>
+                  {[...Array(3)].map((_, index) => (
+                    <div key={index} className="bg-spotify-gray rounded-lg p-4 text-center">
+                      <div className="w-16 h-16 bg-gray-500 rounded-full mx-auto mb-3"></div>
+                      <p className="font-semibold text-sm">No artists found</p>
+                      <p className="text-xs text-gray-400">Try again</p>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+            <button 
+              onClick={fetchRandomArtists}
+              disabled={loading}
+              className="w-full bg-spotify-gray hover:bg-spotify-green hover:text-green-500 text-white font-bold py-3 px-6 rounded-full transition-colors disabled:opacity-50"
+            >
+              {loading ? 'Loading...' : 'Shuffle Artists'}
+            </button>
+          </div>
+
+          {/* Right Column - Login/Get Started */}
+          <div className="bg-spotify-darkgray rounded-2xl p-8">
+            <h3 className="text-2xl font-bold mb-6 text-white">Get Started</h3>
+            <p className="text-gray-300 mb-6">
+              Connect your Spotify account to see your top artists and get personalized recommendations
+            </p>
+            
+            <button className="w-full border border-white hover:border-green-500 hover:text-green-500 text-gray-100 font-bold py-4 px-6 rounded-full transition-colors mb-4">
+              Connect with Spotify
+            </button>
+            
+            <div className="text-gray-400 text-sm">
+              <p>We'll analyze your top 3 artists, craft 10 perfect matches, and spark your next music obsession.</p>
+            </div>
+          </div>
+        </div>
+
+        
       </main>
     </div>
   );

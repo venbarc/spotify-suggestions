@@ -16,6 +16,12 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --spotify-green: #1DB954;
+    --spotify-lightgreen: #1ed760;
+    --spotify-black: #191414;
+    --spotify-gray: #282828;
+    --spotify-lightgray: #3e3e3e;
+    --spotify-darkgray: #181818;
   }
 }
 
@@ -24,3 +30,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+.bg-spotify-green { background-color: var(--spotify-green); }
+.bg-spotify-black { background-color: var(--spotify-black); }
+.bg-spotify-gray { background-color: var(--spotify-gray); }
+.bg-spotify-lightgray { background-color: var(--spotify-lightgray); }
+.bg-spotify-darkgray { background-color: var(--spotify-darkgray); }
+
+.text-spotify-green { color: var(--spotify-green); }
+
+.hover\:bg-spotify-lightgray:hover { background-color: var(--spotify-lightgray); }
