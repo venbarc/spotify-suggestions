@@ -123,7 +123,18 @@ export default function Home() {
                       alt={artist.name}
                       className="w-16 h-16 rounded-full mx-auto mb-3 object-cover"
                     />
-                    <p className="font-semibold text-sm">{artist.name}</p>
+                  <div className="relative group">
+                    <p className="font-semibold text-sm cursor-pointer">
+                      {artist.name.length > 10 ? `${artist.name.substring(0, 10)}..` : artist.name}
+                    </p>
+                    {artist.name.length > 10 && (
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-spotify-green text-black text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 whitespace-nowrap pointer-events-none shadow-lg font-medium">
+                        {artist.name}
+                        {/* Tooltip arrow */}
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-spotify-green"></div>
+                      </div>
+                    )}
+                  </div>
                     <p className="text-xs text-gray-400">{artist.genres[0] || 'Artist'}</p>
                   </div>
                 ))
