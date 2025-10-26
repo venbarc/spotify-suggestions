@@ -9,9 +9,14 @@ function CallbackContent() {
   const [status, setStatus] = useState('Processing authentication...');
 
   useEffect(() => {
+    console.log('Callback URL from env:', process.env.NEXT_PUBLIC_CALLBACK_URL);
+
     const handleCallback = async () => {
       const code = searchParams.get('code');
       const error = searchParams.get('error');
+
+      console.log('Code received:', code);
+      console.log('Error received:', error);
 
       if (error) {
         setStatus(`Error: ${error}`);
