@@ -51,7 +51,7 @@ export default function Home() {
     try 
     {
       const apiSpotify = process.env.NEXT_PUBLIC_API_SPOTIFY;
-      const response = await fetch(`${apiSpotify}/v1/me/top/artists?limit=5&time_range=short_term`, {
+      const response = await fetch(`${apiSpotify}/v1/me/top/artists?limit=5`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
