@@ -94,9 +94,10 @@ export default function Home() {
       redirect_uri: redirectUri,
       scope: 'user-top-read user-read-email user-read-private',
       show_dialog: 'true',
+      locale: 'en'
     });
 
-    window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
+    window.location.href = `https://accounts.spotify.com/en/authorize?${params.toString()}`;
   };
 
   const handleLogout = () => {
