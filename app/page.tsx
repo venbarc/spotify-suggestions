@@ -92,7 +92,7 @@ export default function Home() {
       client_id: clientId,
       response_type: 'code',
       redirect_uri: redirectUri,
-      scope: 'user-top-read user-read-email user-read-private',
+      scope: 'user-top-read user-read-recently-played',
       show_dialog: 'true',
       locale: 'en'
     });
