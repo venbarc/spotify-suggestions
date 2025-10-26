@@ -8,10 +8,12 @@ export async function GET() {
 
     // Generate random search query (a-z)
     const randomChar = String.fromCharCode(97 + Math.floor(Math.random() * 26));
-    
+
+    const apiSpotify = process.env.NEXT_PUBLIC_API_SPOTIFY;
+
     // Fetch random artists
     const artistsResponse = await fetch(
-      `https://api.spotify.com/v1/search?q=${randomChar}&type=artist&limit=3`,
+      `${apiSpotify}/v1/search?q=${randomChar}&type=artist&limit=5`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`
