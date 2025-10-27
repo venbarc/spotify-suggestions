@@ -13,7 +13,7 @@ export async function GET() {
 
     // Fetch random artists
     const artistsResponse = await fetch(
-      `${apiSpotify}/v1/search?q=${randomChar}&type=artist&limit=5`,
+      `${apiSpotify}/v1/search?q=${randomChar}&type=artist&limit=30`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`

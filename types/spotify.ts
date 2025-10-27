@@ -8,13 +8,11 @@ export interface SpotifyArtist {
   }>;
   genres: string[];
   popularity: number;
-  external_urls: {
-    spotify: string;
-  };
-  followers: {
-    total: number;
-  };
-  href: string;
-  type: string;
-  uri: string;
+}
+
+export interface AITrack {
+  name: string;
+  artist: string;
+  reason: string;
+  year: string;
 }
