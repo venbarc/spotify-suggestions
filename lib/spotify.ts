@@ -18,7 +18,8 @@ export async function getSpotifyAccessToken() {
     }
 
     return tokenData.access_token;
-  } catch (error) {
+  } 
+  catch (error) {
     console.error('Error getting Spotify token:', error);
     throw error;
   }

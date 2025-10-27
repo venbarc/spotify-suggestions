@@ -1,11 +1,7 @@
 export interface SpotifyArtist {
   id: string;
   name: string;
-  images: Array<{
-    url: string;
-    height: number;
-    width: number;
-  }>;
+  images: { url: string }[];
   genres: string[];
   popularity: number;
 }
@@ -13,6 +9,10 @@ export interface SpotifyArtist {
 export interface AITrack {
   name: string;
   artist: string;
-  reason: string;
   year: string;
+  reason?: string;
+  preview_url?: string | null;
+  spotify_id?: string | null;
+  external_url?: string | null;
+  image_url?: string | null;
 }
