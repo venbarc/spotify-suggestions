@@ -8,10 +8,6 @@ interface ArtistSelectionProps {
   onClearAllArtists: () => void;
   onGenerateRecommendations: () => void;
   generating: boolean;
-  spotifyConnected?: boolean;
-  spotifyTopArtists?: SpotifyArtist[];
-  onConnectSpotify?: () => void;
-  onLogoutSpotify?: () => void;
 }
 
 export default function ArtistSelection({
@@ -20,11 +16,7 @@ export default function ArtistSelection({
   onRemoveArtist,
   onClearAllArtists,
   onGenerateRecommendations,
-  generating,
-  spotifyConnected,
-  spotifyTopArtists,
-  onConnectSpotify,
-  onLogoutSpotify,
+  generating
 }: ArtistSelectionProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SpotifyArtist[]>([]);
@@ -68,46 +60,6 @@ export default function ArtistSelection({
           </span>
         )}
       </div>
-
-        <div className="mb-4">
-        {spotifyConnected ? (
-          <div className="flex items-center gap-4">
-            <button
-              className="px-4 py-2 bg-red-600 rounded"
-              onClick={onLogoutSpotify}
-            >
-              Logout Spotify
-            </button>
-            <span className="text-sm text-gray-300">Connected — top artists loaded.</span>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <button
-              className="px-4 py-2 bg-green-600 rounded"
-              onClick={onConnectSpotify}
-            >
-              Connect to Spotify
-            </button>
-            <p className="text-xs text-yellow-300">
-              Note: Only whitelisted Spotify accounts can connect. Contact the developer to whitelist your account.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Show auto-filled top artists preview when available */}
-      {spotifyTopArtists && spotifyTopArtists.length > 0 && (
-        <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-300 mb-2">Top artists (from Spotify)</h3>
-          <div className="flex flex-wrap gap-2">
-            {spotifyTopArtists.map(a => (
-              <div key={a.id} className="px-3 py-1 bg-gray-800 rounded text-sm">
-                {a.name}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       <SearchInput
         searchQuery={searchQuery}
@@ -195,7 +147,7 @@ function SearchResults({ searchResults, onAddArtist }: SearchResultsProps) {
               <p className="text-gray-400 text-xs sm:text-sm truncate">{artist.genres[0]}</p>
             )}
           </div>
-          <div className="text-green-500 font-bold text-base sm:text-lg flex-shrink-0"></div>
+          <div className="text-green-500 font-bold text-base sm:text-lg flex-shrink-0">+</div>
         </div>
       ))}
     </div>
@@ -264,7 +216,7 @@ function EmptyArtistSlot() {
   return (
     <div className="bg-gray-800 rounded-xl p-3 sm:p-4 text-center border-2 border-dashed border-gray-600 hover:border-gray-500 transition-colors">
       <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gray-700 rounded-full mx-auto mb-2 sm:mb-3 flex items-center justify-center">
-        <span className="text-gray-400 text-xl sm:text-2xl"></span>
+        <span className="text-gray-400 text-xl sm:text-2xl">+</span>
       </div>
       <p className="text-gray-400 text-xs sm:text-sm">Add Artist</p>
     </div>

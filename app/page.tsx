@@ -22,12 +22,8 @@ export default function Home() {
   const [showGlow, setShowGlow] = useState(false);
   const recommendationsRef = useRef<HTMLDivElement>(null);
 
-  const [spotifyConnected, setSpotifyConnected] = useState(false);
-  const [spotifyTopArtists, setSpotifyTopArtists] = useState<SpotifyArtist[]>([]);
-
   useEffect(() => {
     fetchRandomArtists();
-    checkSpotifyConnection();
   }, []);
 
   const fetchRandomArtists = async () => {
@@ -43,28 +39,6 @@ export default function Home() {
       toast.error('Failed to load featured artists');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const checkSpotifyConnection = async () => {
-    try {
-      const res = await fetch('/api/spotify/top-artists');
-      if (res.ok) {
-        const artists: SpotifyArtist[] = await res.json();
-        if (artists && artists.length > 0) {
-          setSpotifyConnected(true);
-          setSpotifyTopArtists(artists);
-          // Auto-fill userArtists only if user hasn't already selected artists
-          setUserArtists(prev => (prev.length === 0 ? artists : prev));
-          toast.success('Connected to Spotify — top artists loaded');
-        }
-      } else {
-        // Not connected or not whitelisted
-        setSpotifyConnected(false);
-      }
-    } catch (err) {
-      console.error('Spotify connection check failed', err);
-      setSpotifyConnected(false);
     }
   };
 
@@ -93,42 +67,6 @@ export default function Home() {
     if (userArtists.length > 0) {
       setUserArtists([]);
       toast.success('Cleared all artists');
-    }
-  };
-
-  const connectSpotify = async () => {
-    try {
-      const res = await fetch('/api/spotify/login');
-      if (res.ok) {
-        const data = await res.json();
-        if (data.url) {
-          // redirect to Spotify auth
-          window.location.href = data.url;
-        } else {
-          toast.error('Failed to start Spotify login');
-        }
-      } else {
-        toast.error('Failed to start Spotify login');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to start Spotify login');
-    }
-  };
-
-  const logoutSpotify = async () => {
-    try {
-      const res = await fetch('/api/spotify/logout', { method: 'POST' });
-      if (res.ok) {
-        setSpotifyConnected(false);
-        setSpotifyTopArtists([]);
-        toast.success('Logged out of Spotify');
-      } else {
-        toast.error('Failed to logout of Spotify');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to logout of Spotify');
     }
   };
 
@@ -220,10 +158,6 @@ export default function Home() {
             onClearAllArtists={clearAllArtists}
             onGenerateRecommendations={generateRecommendations}
             generating={generating}
-            spotifyConnected={spotifyConnected}
-            spotifyTopArtists={spotifyTopArtists}
-            onConnectSpotify={connectSpotify}
-            onLogoutSpotify={logoutSpotify}
           />
         </div>
       </main>
