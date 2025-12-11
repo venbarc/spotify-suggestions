@@ -126,7 +126,7 @@ export default function SpotifyAuthModal({
                   <div className="bg-gray-800 bg-opacity-50 rounded-lg p-4 border border-gray-700">
                     <p className="text-gray-400 text-xs md:text-sm mb-2 font-semibold">DEVELOPER EMAIL:</p>
                     <p className="text-green-400 font-mono text-sm md:text-base break-all">
-                      contact@developer.com
+                      bentf24@gmail.com
                     </p>
                   </div>
                 </div>
