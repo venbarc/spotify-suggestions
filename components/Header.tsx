@@ -1,42 +1,27 @@
 'use client';
 
-import { useState } from 'react';
 import { SpotifyArtist } from '../types/spotify';
-import SpotifyAuthModal from './SpotifyAuthModal';
 
 interface HeaderProps {
   onSpotifyConnect?: (topArtist: SpotifyArtist) => void;
 }
 
 export default function Header({ onSpotifyConnect }: HeaderProps) {
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [isAuthorized, setIsAuthorized] = useState(false);
-
   const handleConnectSpotify = async () => {
     try {
       // Get the auth URL from the backend
       const authResponse = await fetch('/api/auth/spotify');
       const { url } = await authResponse.json();
       
-      // Open modal and redirect to Spotify auth
-      setShowAuthModal(true);
-      // Delay redirect slightly so modal shows
-      setTimeout(() => {
-        window.location.href = url;
-      }, 300);
+      // Redirect to Spotify auth
+      window.location.href = url;
     } catch (error) {
       console.error('Error initiating Spotify auth:', error);
     }
   };
 
-  const handleAuthSuccess = (topArtist?: any) => {
-    setIsAuthorized(true);
-    onSpotifyConnect?.(topArtist);
-  };
-
   return (
-    <>
-      <header className="py-4 md:py-6 px-4 md:px-8 border-b border-gray-800">
+    <header className="py-4 md:py-6 px-4 md:px-8 border-b border-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             {/* Logo and Title */}
@@ -77,14 +62,6 @@ export default function Header({ onSpotifyConnect }: HeaderProps) {
             </div>
           </div>
         </div>
-      </header>
-
-      <SpotifyAuthModal 
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        isAuthorized={isAuthorized}
-        onAuthSuccess={handleAuthSuccess}
-      />
-    </>
+    </header>
   );
 }

@@ -24,6 +24,33 @@ export default function Home() {
 
   useEffect(() => {
     fetchRandomArtists();
+    
+    // Check for Spotify auth callback
+    const params = new URLSearchParams(window.location.search);
+    const authStatus = params.get('auth');
+    const artistData = params.get('artist');
+    
+    if (authStatus === 'success') {
+      if (artistData) {
+        try {
+          const artist: SpotifyArtist = JSON.parse(decodeURIComponent(artistData));
+          setUserArtists(prev => [artist, ...prev]);
+          toast.success(`Connected! Your top artist ${artist.name} has been added!`);
+        } catch (e) {
+          toast.success('Successfully connected to Spotify!');
+        }
+      } else {
+        toast.success('Successfully connected to Spotify!');
+      }
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (authStatus === 'unauthorized') {
+      toast.error('Your Spotify account is not authorized. Contact the developer.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (params.get('error')) {
+      toast.error('Failed to connect to Spotify. Please try again.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }, []);
 
   const fetchRandomArtists = async () => {
