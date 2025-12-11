@@ -70,9 +70,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/?auth=unauthorized', request.url));
     }
 
-    // Get user's top artists
+    // Get user's top artists (up to 5)
     const topArtistsResponse = await fetch(
-      'https://api.spotify.com/v1/me/top/artists?limit=1',
+      'https://api.spotify.com/v1/me/top/artists?limit=5',
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`
@@ -85,18 +85,19 @@ export async function GET(request: NextRequest) {
     }
 
     const topArtistsData = await topArtistsResponse.json();
-    const topArtist = topArtistsData.items?.[0];
+    const topItems = topArtistsData.items || [];
 
-    if (topArtist) {
-      // Encode artist data to pass via URL
-      const artistData = encodeURIComponent(JSON.stringify({
-        id: topArtist.id,
-        name: topArtist.name,
-        image: topArtist.images?.[0]?.url,
-        popularity: topArtist.popularity
+    if (topItems.length > 0) {
+      // Map to a lightweight artist array and encode to pass via URL
+      const artists = topItems.map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        image: a.images?.[0]?.url || null,
+        popularity: a.popularity || 0
       }));
-      
-      return NextResponse.redirect(new URL(`/?auth=success&artist=${artistData}`, request.url));
+
+      const artistsData = encodeURIComponent(JSON.stringify(artists));
+      return NextResponse.redirect(new URL(`/?auth=success&artists=${artistsData}`, request.url));
     }
 
     return NextResponse.redirect(new URL('/?auth=success', request.url));

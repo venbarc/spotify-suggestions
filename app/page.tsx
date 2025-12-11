@@ -21,6 +21,8 @@ export default function Home() {
   const [generating, setGenerating] = useState(false);
   const [showGlow, setShowGlow] = useState(false);
   const recommendationsRef = useRef<HTMLDivElement>(null);
+  const [connected, setConnected] = useState(false);
+  const [storedTopArtists, setStoredTopArtists] = useState<SpotifyArtist[]>([]);
 
   useEffect(() => {
     fetchRandomArtists();
@@ -28,13 +30,47 @@ export default function Home() {
     // Check for Spotify auth callback
     const params = new URLSearchParams(window.location.search);
     const authStatus = params.get('auth');
+    const artistsData = params.get('artists');
     const artistData = params.get('artist');
-    
+
+    // Restore previous connection from localStorage if present
+    const prevConnected = localStorage.getItem('spotify_connected');
+    const prevArtists = localStorage.getItem('spotify_top_artists');
+    if (prevConnected === 'true' && prevArtists) {
+      try {
+        const parsed: SpotifyArtist[] = JSON.parse(prevArtists);
+        setStoredTopArtists(parsed);
+        setConnected(true);
+      } catch (e) {
+        // ignore
+      }
+    }
+
     if (authStatus === 'success') {
-      if (artistData) {
+      if (artistsData) {
+        try {
+          const artists: SpotifyArtist[] = JSON.parse(decodeURIComponent(artistsData));
+          const toAdd = artists.slice(0, 5);
+          setStoredTopArtists(toAdd);
+          setUserArtists(prev => {
+            const merged = [...toAdd, ...prev].filter((v, i, a) => a.findIndex(x => x.id === v.id) === i).slice(0, 5);
+            return merged;
+          });
+          setConnected(true);
+          localStorage.setItem('spotify_connected', 'true');
+          localStorage.setItem('spotify_top_artists', JSON.stringify(toAdd));
+          toast.success('Connected and your top artists were added!');
+        } catch (e) {
+          toast.success('Successfully connected to Spotify!');
+        }
+      } else if (artistData) {
         try {
           const artist: SpotifyArtist = JSON.parse(decodeURIComponent(artistData));
-          setUserArtists(prev => [artist, ...prev]);
+          setStoredTopArtists([artist]);
+          setUserArtists(prev => [artist, ...prev].slice(0, 5));
+          setConnected(true);
+          localStorage.setItem('spotify_connected', 'true');
+          localStorage.setItem('spotify_top_artists', JSON.stringify([artist]));
           toast.success(`Connected! Your top artist ${artist.name} has been added!`);
         } catch (e) {
           toast.success('Successfully connected to Spotify!');
@@ -156,10 +192,40 @@ export default function Home() {
     }
   };
 
+  const handleLogout = () => {
+    setConnected(false);
+    localStorage.removeItem('spotify_connected');
+    toast.success('Disconnected from Spotify');
+  };
+
+  const handleAutoFill = () => {
+    let toUse = storedTopArtists;
+    if (!toUse || toUse.length === 0) {
+      const fromStorage = localStorage.getItem('spotify_top_artists');
+      if (fromStorage) {
+        try {
+          toUse = JSON.parse(fromStorage);
+          setStoredTopArtists(toUse);
+        } catch (e) {
+          toUse = [];
+        }
+      }
+    }
+    if (toUse && toUse.length > 0) {
+      setUserArtists(prev => {
+        const merged = [...toUse, ...prev].filter((v, i, a) => a.findIndex(x => x.id === v.id) === i).slice(0, 5);
+        return merged;
+      });
+      toast.success('Top artists auto-filled');
+    } else {
+      toast.error('No stored top artists to add');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <ToastProvider />
-      <Header onSpotifyConnect={handleSpotifyConnect} />
+      <Header onSpotifyConnect={handleSpotifyConnect} connected={connected} onLogout={() => handleLogout()} onAutoFill={() => handleAutoFill()} />
 
       <main className="max-w-7xl mx-auto px-8 py-8">
         <HeroSection />
