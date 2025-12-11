@@ -19,6 +19,8 @@ export default function Home() {
   const [recommendations, setRecommendations] = useState<AITrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const retryTimerRef = useRef<number | null>(null);
   const [showGlow, setShowGlow] = useState(false);
   const recommendationsRef = useRef<HTMLDivElement>(null);
   const [connected, setConnected] = useState(false);
@@ -87,6 +89,13 @@ export default function Home() {
       toast.error('Your Spotify are authenticated but your Spotify are not whitelisted in this app — please contact the developer bentf24@gmail.com');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
+
+    return () => {
+      // cleanup any pending retry timer on unmount
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+      }
+    };
   }, []);
 
   const fetchRandomArtists = async () => {
@@ -133,52 +142,74 @@ export default function Home() {
     }
   };
 
+  const MAX_RETRIES = 2;
+
   const generateRecommendations = async () => {
     if (userArtists.length === 0) {
       toast.error('Please add at least one artist');
       return;
     }
 
-    setGenerating(true);
-    try {
-      const response = await fetch('/api/ai-recommendations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          artistNames: userArtists.map(artist => artist.name) 
-        }),
-      });
+    // Wrapper that allows retry attempts
+    const doGenerate = async (attempt = 0) => {
+      setGenerating(true);
+      try {
+        const response = await fetch('/api/ai-recommendations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            artistNames: userArtists.map(artist => artist.name) 
+          }),
+        });
 
-      if (response.ok) {
-        const tracks = await response.json();
-        setRecommendations(tracks);
-        toast.success('Recommendations generated successfully!');
-        
-        setTimeout(() => {
-          if (recommendationsRef.current) {
-            recommendationsRef.current.scrollIntoView({ 
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-          setShowGlow(true);
-          setTimeout(() => setShowGlow(false), 2000);
-        }, 100);
-      } else {
+        if (response.ok) {
+          const tracks = await response.json();
+          setRecommendations(tracks);
+          setRetryCount(0);
+          toast.success('Recommendations generated successfully!');
+
+          setTimeout(() => {
+            if (recommendationsRef.current) {
+              recommendationsRef.current.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }
+            setShowGlow(true);
+            setTimeout(() => setShowGlow(false), 2000);
+          }, 100);
+          return;
+        }
+
         const errorData = await response.json();
-        const details = errorData.details || errorData.message || errorData.error;
+        const details = errorData.details || errorData.message || errorData.error || '';
+
+        // Look for Google Gemini quota retry suggestion like: "Please retry in 32.314419543s"
+        const retryMatch = String(details).match(/retry in\s*(\d+(?:\.\d+)?)s/i);
+        if (retryMatch && attempt < MAX_RETRIES) {
+          const waitSeconds = Math.ceil(Number(retryMatch[1]));
+          setRetryCount(attempt + 1);
+          toast(`Quota exceeded — retrying in ${waitSeconds}s (attempt ${attempt + 1}/${MAX_RETRIES})`, { icon: '⏳' });
+          // schedule retry
+          retryTimerRef.current = window.setTimeout(() => {
+            doGenerate(attempt + 1);
+          }, waitSeconds * 1000) as unknown as number;
+          return;
+        }
+
+        // No retry suggestion or max attempts reached — show details to user
         toast.error(details || 'Failed to generate recommendations');
+      } catch (error) {
+        console.error('Error generating recommendations:', error);
+        toast.error('Error generating recommendations');
+      } finally {
+        setGenerating(false);
       }
-    } 
-    catch (error) {
-      console.error('Error generating recommendations:', error);
-      toast.error('Error generating recommendations');
-    } 
-    finally {
-      setGenerating(false);
-    }
+    };
+
+    doGenerate(0);
   };
 
   const clearRecommendations = () => {
