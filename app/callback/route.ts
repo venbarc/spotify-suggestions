@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const AUTHORIZED_EMAILS = [
-  process.env.SPOTIFY_AUTHORIZED_EMAIL || 'bentf24@gmail.com'
-];
+// Support comma-separated authorized emails via env var SPOTIFY_AUTHORIZED_EMAIL
+// If not set, allow any authenticated Spotify user to connect.
+const rawAuthorized = process.env.SPOTIFY_AUTHORIZED_EMAIL || '';
+const AUTHORIZED_EMAILS = rawAuthorized
+  ? rawAuthorized.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)
+  : null;
 
 export async function GET(request: NextRequest) {
   try {
@@ -60,14 +63,14 @@ export async function GET(request: NextRequest) {
     }
 
     const userData = await userResponse.json();
-    const userEmail = userData.email;
+    const userEmail = (userData.email || '').toLowerCase();
 
-    // Check if user is authorized
-    const isAuthorized = AUTHORIZED_EMAILS.includes(userEmail);
-
-    if (!isAuthorized) {
-      // Redirect with unauthorized flag
-      return NextResponse.redirect(new URL('/?auth=unauthorized', request.url));
+    // If AUTHORIZED_EMAILS is set (non-null), enforce whitelist; otherwise allow all users
+    if (AUTHORIZED_EMAILS && AUTHORIZED_EMAILS.length > 0) {
+      const isAuthorized = AUTHORIZED_EMAILS.includes(userEmail);
+      if (!isAuthorized) {
+        return NextResponse.redirect(new URL('/?auth=unauthorized', request.url));
+      }
     }
 
     // Get user's top artists (up to 5)
@@ -88,11 +91,12 @@ export async function GET(request: NextRequest) {
     const topItems = topArtistsData.items || [];
 
     if (topItems.length > 0) {
-      // Map to a lightweight artist array and encode to pass via URL
+      // Map to the frontend's expected SpotifyArtist shape
       const artists = topItems.map((a: any) => ({
         id: a.id,
         name: a.name,
-        image: a.images?.[0]?.url || null,
+        images: (a.images || []).map((img: any) => ({ url: img.url })),
+        genres: a.genres || [],
         popularity: a.popularity || 0
       }));
 
