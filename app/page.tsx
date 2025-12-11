@@ -122,10 +122,17 @@ export default function Home() {
     toast.success('Recommendations cleared');
   };
 
+  const handleSpotifyConnect = (topArtist: SpotifyArtist) => {
+    if (topArtist && !userArtists.find(a => a.id === topArtist.id)) {
+      setUserArtists(prev => [topArtist, ...prev]);
+      toast.success(`Your top artist ${topArtist.name} has been added!`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <ToastProvider />
-      <Header />
+      <Header onSpotifyConnect={handleSpotifyConnect} />
 
       <main className="max-w-7xl mx-auto px-8 py-8">
         <HeroSection />

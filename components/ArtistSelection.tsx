@@ -139,7 +139,7 @@ function SearchResults({ searchResults, onAddArtist }: SearchResultsProps) {
           <img
             src={artist.images[0]?.url || '/placeholder-artist.jpg'}
             alt={artist.name}
-            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover flex-shrink-0"
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0"
           />
           <div className="flex-1 min-w-0">
             <span className="text-white font-medium text-sm sm:text-base truncate">{artist.name}</span>
@@ -147,7 +147,7 @@ function SearchResults({ searchResults, onAddArtist }: SearchResultsProps) {
               <p className="text-gray-400 text-xs sm:text-sm truncate">{artist.genres[0]}</p>
             )}
           </div>
-          <div className="text-green-500 font-bold text-base sm:text-lg flex-shrink-0">+</div>
+          <div className="text-green-500 font-bold text-base sm:text-lg shrink-0">+</div>
         </div>
       ))}
     </div>
