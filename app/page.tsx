@@ -168,7 +168,8 @@ export default function Home() {
         }, 100);
       } else {
         const errorData = await response.json();
-        toast.error(errorData.error || 'Failed to generate recommendations');
+        const details = errorData.details || errorData.message || errorData.error;
+        toast.error(details || 'Failed to generate recommendations');
       }
     } 
     catch (error) {
