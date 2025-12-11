@@ -1,5 +1,7 @@
 import { SpotifyArtist } from '../types/spotify';
 
+const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"%3E%3Crect fill="%23374151" width="200" height="200"/%3E%3Ccircle cx="100" cy="70" r="30" fill="%239CA3AF"/%3E%3Cpath d="M60 150 Q60 120 100 120 Q140 120 140 150 L140 170 Q140 180 130 180 L70 180 Q60 180 60 170 Z" fill="%239CA3AF"/%3E%3C/svg%3E';
+
 interface FeaturedArtistsProps {
   featuredArtists: SpotifyArtist[];
   userArtists: SpotifyArtist[];
@@ -69,7 +71,7 @@ function FeaturedArtistCard({ artist, userArtists, onAddArtist }: FeaturedArtist
   return (
     <div className="bg-gray-800 rounded-xl p-3 sm:p-4 text-center border border-gray-700 hover:border-green-500 transition-colors group">
       <img 
-        src={artist.images[0]?.url || '/placeholder-artist.jpg'} 
+        src={artist.images?.[0]?.url || PLACEHOLDER_IMAGE} 
         alt={artist.name}
         className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full mx-auto mb-2 sm:mb-3 object-cover border-2 border-transparent group-hover:border-green-500 transition-colors"
       />
@@ -85,7 +87,7 @@ function FeaturedArtistCard({ artist, userArtists, onAddArtist }: FeaturedArtist
         )}
       </div>
       <p className="text-gray-400 mb-2 sm:mb-3 truncate text-xs">
-        {artist.genres[0]?.split(' ')[0] || 'Artist'}
+        {artist.genres?.[0]?.split(' ')[0] || 'Artist'}
       </p>
       <button
         onClick={() => onAddArtist(artist)}

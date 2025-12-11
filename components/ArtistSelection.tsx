@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { SpotifyArtist } from '../types/spotify';
 
+const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"%3E%3Crect fill="%23374151" width="200" height="200"/%3E%3Ccircle cx="100" cy="70" r="30" fill="%239CA3AF"/%3E%3Cpath d="M60 150 Q60 120 100 120 Q140 120 140 150 L140 170 Q140 180 130 180 L70 180 Q60 180 60 170 Z" fill="%239CA3AF"/%3E%3C/svg%3E';
+
 interface ArtistSelectionProps {
   userArtists: SpotifyArtist[];
   onAddArtist: (artist: SpotifyArtist) => void;
@@ -137,13 +139,13 @@ function SearchResults({ searchResults, onAddArtist }: SearchResultsProps) {
           className="p-3 sm:p-4 hover:bg-gray-700 cursor-pointer flex items-center gap-3 sm:gap-4 transition-colors border-b border-gray-700 last:border-b-0"
         >
           <img
-            src={artist.images[0]?.url || '/placeholder-artist.jpg'}
+            src={artist.images?.[0]?.url || PLACEHOLDER_IMAGE}
             alt={artist.name}
             className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0"
           />
           <div className="flex-1 min-w-0">
             <span className="text-white font-medium text-sm sm:text-base truncate">{artist.name}</span>
-            {artist.genres[0] && (
+            {artist.genres?.[0] && (
               <p className="text-gray-400 text-xs sm:text-sm truncate">{artist.genres[0]}</p>
             )}
           </div>
@@ -193,7 +195,7 @@ function SelectedArtistCard({ artist, onRemoveArtist }: SelectedArtistCardProps)
         ×
       </button>
       <img 
-        src={artist.images[0]?.url || '/placeholder-artist.jpg'} 
+        src={artist.images?.[0]?.url || PLACEHOLDER_IMAGE} 
         alt={artist.name}
         className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full mx-auto mb-2 sm:mb-3 object-cover border-2 border-green-500"
       />

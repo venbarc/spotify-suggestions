@@ -1,5 +1,7 @@
 import { SpotifyArtist } from '../types/spotify';
 
+const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"%3E%3Crect fill="%23374151" width="200" height="200"/%3E%3Ccircle cx="100" cy="70" r="30" fill="%239CA3AF"/%3E%3Cpath d="M60 150 Q60 120 100 120 Q140 120 140 150 L140 170 Q140 180 130 180 L70 180 Q60 180 60 170 Z" fill="%239CA3AF"/%3E%3C/svg%3E';
+
 interface MarqueeSectionProps {
   featuredArtists: SpotifyArtist[];
   onAddArtist: (artist: SpotifyArtist) => void;
@@ -85,14 +87,14 @@ function ArtistCard({ artist, onAddArtist, size }: ArtistCardProps) {
     >
       <div className={`relative ${isMobile ? 'mb-2' : 'mb-3'}`}>
         <img
-          src={artist.images[0]?.url || '/placeholder-artist.jpg'}
+          src={artist.images?.[0]?.url || PLACEHOLDER_IMAGE}
           alt={artist.name}
           className={`
             object-cover rounded-lg mx-auto group-hover:brightness-110 transition-all
             ${isMobile ? 'w-32 h-32' : 'w-40 h-40'}
           `}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
         {!isMobile && (
           <div className="absolute bottom-2 left-2 right-2 text-white text-sm font-medium truncate opacity-0 group-hover:opacity-100 transition-opacity">
             {artist.name}
@@ -104,7 +106,7 @@ function ArtistCard({ artist, onAddArtist, size }: ArtistCardProps) {
           {artist.name}
         </p>
         <p className={`text-gray-400 truncate ${isMobile ? 'text-xs' : 'text-xs'}`}>
-          {artist.genres[0] || (isMobile ? 'Artist' : 'Various Genres')}
+          {artist.genres?.[0] || (isMobile ? 'Artist' : 'Various Genres')}
         </p>
         {!isMobile && (
           <div className="flex items-center justify-center mt-2">
