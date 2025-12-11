@@ -81,10 +81,10 @@ export default function Home() {
       // Clean URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (authStatus === 'unauthorized') {
-      toast.error('Your Spotify account is not authorized. Contact the developer.');
+      toast.error('Your Spotify are authenticated but your Spotify are not whitelisted in this app — please contact the developer bentf24@gmail.com');
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (params.get('error')) {
-      toast.error('Failed to connect to Spotify. Please try again.');
+      toast.error('Your Spotify are authenticated but your Spotify are not whitelisted in this app — please contact the developer bentf24@gmail.com');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
