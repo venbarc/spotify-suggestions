@@ -199,8 +199,12 @@ export default function Home() {
           return;
         }
 
-        // No retry suggestion or max attempts reached — show details to user
-        toast.error(details || 'Failed to generate recommendations');
+        // Normalize verbose quota/rate-limit messages into a concise user-facing message
+        let userMessage = details || 'Failed to generate recommendations';
+        if (typeof userMessage === 'string' && /quota|rate[- ]limit|exceed/i.test(userMessage)) {
+          userMessage = 'Gemini API quota exhausted — please check billing or try again later.';
+        }
+        toast.error(userMessage);
       } catch (error) {
         console.error('Error generating recommendations:', error);
         toast.error('Error generating recommendations');
